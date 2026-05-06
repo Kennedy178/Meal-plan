@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muscle Meal Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #050507;
+  --bg-card: rgba(18, 18, 22, 0.65);
+  --bg-card-hover: rgba(24, 24, 30, 0.85);
+  --accent: #c9a25c;
+  --accent-glow: rgba(201, 162, 92, 0.25);
+  --text-primary: #f2f2f5;
+  --text-secondary: #8a8a9a;
+  --text-muted: #555566;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(201, 162, 92, 0.5);
+  --glass: rgba(255, 255, 255, 0.03);
+  --radius: 18px;
+  --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Background Depth */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: 
+    radial-gradient(circle at 15% 10%, rgba(201, 162, 92, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(100, 149, 237, 0.06) 0%, transparent 45%),
+    var(--bg-primary);
+}
+.bg-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* Container */
+.container {
+  max-width: 1280px;
+  margin: auto;
+  padding: 40px 24px 80px;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 50px;
+  animation: fadeDown 0.8s ease-out;
+}
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.subtitle {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Day Filter */
+.day-filter {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 36px;
+  animation: fadeUp 0.6s 0.2s both;
+}
+.filter-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.filter-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.filter-btn.active {
+  background: var(--accent);
+  color: #050507;
+  border-color: var(--accent);
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  perspective: 1000px;
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+  opacity: 0;
+  transform: translateY(20px);
+}
+.card.visible { opacity: 1; transform: translateY(0); }
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+}
+.card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 20px var(--accent-glow);
+}
+.card.hidden { display: none; }
+
+.day {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  letter-spacing: -0.01em;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(201, 162, 92, 0.15);
+  border: 1px solid rgba(201, 162, 92, 0.4);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.meal {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+.meal:last-child { border-bottom: none; }
+.meal:hover { padding-left: 6px; color: var(--text-primary); }
+.meal span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+.meal-type {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+/* Nutrition Panel */
+.nutrition-panel {
+  margin-top: 48px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 24px;
+  animation: fadeUp 0.8s 0.4s both;
+}
+.macro {
+  text-align: center;
+}
+.macro-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.macro-bar {
+  height: 4px;
+  background: var(--border);
+  border-radius: 999px;
+  margin: 8px 0 12px;
+  overflow: hidden;
+}
+.macro-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), #e6d3a8);
+  width: 0;
+  transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.macro-val {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin-top: 60px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  animation: fadeUp 0.8s 0.6s both;
+}
+.footer span { color: var(--accent); font-weight: 500; }
+
+/* Animations */
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+  .nutrition-panel { grid-template-columns: 1fr 1fr; }
+  .card { padding: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+
+<div class="container">
+  <header>
+    <h1>7-Day Muscle Building Meal Plan</h1>
+    <p class="subtitle">Precision Nutrition. Engineered for Growth.</p>
+  </header>
+
+  <nav class="day-filter" id="dayFilter">
+    <button class="filter-btn active" data-day="all">All Days</button>
+    <button class="filter-btn" data-day="mon">Mon</button>
+    <button class="filter-btn" data-day="tue">Tue</button>
+    <button class="filter-btn" data-day="wed">Wed</button>
+    <button class="filter-btn" data-day="thu">Thu</button>
+    <button class="filter-btn" data-day="fri">Fri</button>
+    <button class="filter-btn" data-day="sat">Sat</button>
+    <button class="filter-btn" data-day="sun">Sun</button>
+  </nav>
+
+  <div class="grid" id="mealGrid">
+
+    <div class="card" data-day="mon">
+      <div class="day">Monday</div>
+      <div class="meal">
+        <div class="meal-type">Pre-Gym: 2 boiled eggs <span>(fuel)</span></div>
+      </div>
+      <div class="meal">
+        <div class="meal-type">Post-Gym: 4 eggs + ugali + spinach <span>(recovery)</span></div>
+      </div>
+      <div class="meal">
+        <div class="meal-type">Dinner: Beans + rice + cabbage</div>
+      </div>
+    </div>
+
+    <div class="card" data-day="tue">
+      <div class="day">Tuesday</div>
+      <div class="meal"><div class="meal-type">Pre-Gym: Banana + 2 eggs</div></div>
+      <div class="meal"><div class="meal-type">Post-Gym: 3 eggs (tomato mix) + ugali + sukuma</div></div>
+      <div class="meal"><div class="meal-type">Dinner: Njahi + potatoes</div></div>
+    </div>
+
+    <div class="card" data-day="wed">
+      <div class="day">Wednesday</div>
+      <div class="meal"><div class="meal-type">Pre-Gym: 2 boiled eggs</div></div>
+      <div class="meal"><div class="meal-type">Post-Gym: 4 eggs + rice + cabbage</div></div>
+      <div class="meal"><div class="meal-type">Dinner: Beans + chapati</div></div>
+    </div>
+
+    <div class="card" data-day="thu">
+      <div class="day">Thursday</div>
+      <div class="meal"><div class="meal-type">Pre-Gym: Banana + 2 eggs</div></div>
+      <div class="meal"><div class="meal-type">Post-Gym: 3 eggs + ugali + spinach</div></div>
+      <div class="meal"><div class="meal-type">Dinner: Njahi + rice</div></div>
+    </div>
+
+    <div class="card" data-day="fri">
+      <div class="day">Friday</div>
+      <div class="meal"><div class="meal-type">Pre-Gym: 2 eggs</div></div>
+      <div class="meal"><div class="meal-type">Post-Gym: 4 eggs (tomato mix) + ugali + sukuma</div></div>
+      <div class="meal"><div class="meal-type">Dinner: Beans + potatoes</div></div>
+    </div>
+
+    <div class="card" data-day="sat">
+      <div class="day">Saturday <span class="badge">Meat Day</span></div>
+      <div class="meal"><div class="meal-type">Brunch: Meat + ugali + greens</div></div>
+      <div class="meal"><div class="meal-type">Dinner: 3 eggs + cabbage</div></div>
+    </div>
+
+    <div class="card" data-day="sun">
+      <div class="day">Sunday</div>
+      <div class="meal"><div class="meal-type">Brunch: 4 eggs + chapati</div></div>
+      <div class="meal"><div class="meal-type">Dinner: Beans + rice + spinach</div></div>
+    </div>
+
+  </div>
+
+  <section class="nutrition-panel">
+    <div class="macro">
+      <div class="macro-label">Daily Protein</div>
+      <div class="macro-bar"><div class="macro-fill" data-width="85%"></div></div>
+      <div class="macro-val">140–160g</div>
+    </div>
+    <div class="macro">
+      <div class="macro-label">Complex Carbs</div>
+      <div class="macro-bar"><div class="macro-fill" data-width="70%"></div></div>
+      <div class="macro-val">280–320g</div>
+    </div>
+    <div class="macro">
+      <div class="macro-label">Healthy Fats</div>
+      <div class="macro-bar"><div class="macro-fill" data-width="45%"></div></div>
+      <div class="macro-val">60–75g</div>
+    </div>
+    <div class="macro">
+      <div class="macro-label">Recovery Focus</div>
+      <div class="macro-bar"><div class="macro-fill" data-width="90%"></div></div>
+      <div class="macro-val">High</div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    Daily Target: <span>4–6 eggs + beans/njahi</span> | Train hard. Recover harder.
+  </footer>
+</div>
+
+<script>
+  // Intersection Observer for scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.card').forEach(card => observer.observe(card));
+
+  // Animate macro bars on load
+  setTimeout(() => {
+    document.querySelectorAll('.macro-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width;
+    });
+  }, 400);
+
+  // Day filter logic
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.card');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const day = btn.dataset.day;
+
+      cards.forEach(card => {
+        if (day === 'all' || card.dataset.day === day) {
+          card.classList.remove('hidden');
+          setTimeout(() => card.classList.add('visible'), 10);
+        } else {
+          card.classList.add('hidden');
+          card.classList.remove('visible');
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

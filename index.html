@@ -6,378 +6,1455 @@
 <title>Muscle Meal Plan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-primary: #050507;
-  --bg-card: rgba(18, 18, 22, 0.65);
-  --bg-card-hover: rgba(24, 24, 30, 0.85);
-  --accent: #c9a25c;
-  --accent-glow: rgba(201, 162, 92, 0.25);
-  --text-primary: #f2f2f5;
-  --text-secondary: #8a8a9a;
-  --text-muted: #555566;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(201, 162, 92, 0.5);
-  --glass: rgba(255, 255, 255, 0.03);
+  --bg: #fafafa;
+  --card-bg: #ffffff;
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary: #d2d2d7;
+  --accent: #007aff;
+  --accent-light: #e3f2ff;
+  --success: #34c759;
+  --success-light: #e8f8ec;
+  --water: #32ade6;
+  --water-light: #e3f7ff;
+  --border: #e5e5ea;
+  --shadow: rgba(0,0,0,0.04);
+  --shadow-hover: rgba(0,0,0,0.08);
   --radius: 18px;
-  --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --card-bg: #1c1c1e;
+    --text-primary: #f5f5f7;
+    --text-secondary: #86868b;
+    --text-tertiary: #48484a;
+    --accent: #0a84ff;
+    --accent-light: #0d2847;
+    --success: #30d158;
+    --success-light: #0d2818;
+    --water: #64d2ff;
+    --water-light: #0d2835;
+    --border: #38383a;
+    --shadow: rgba(0,0,0,0.3);
+    --shadow-hover: rgba(0,0,0,0.5);
+  }
+}
 
-body {
-  margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
-  background: var(--bg-primary);
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Text', sans-serif;
+  background: var(--bg);
   color: var(--text-primary);
-  line-height: 1.5;
-  overflow-x: hidden;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Background Depth */
-.bg-layer {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: 
-    radial-gradient(circle at 15% 10%, rgba(201, 162, 92, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 85% 90%, rgba(100, 149, 237, 0.06) 0%, transparent 45%),
-    var(--bg-primary);
-}
-.bg-layer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-}
-
-/* Container */
 .container {
-  max-width: 1280px;
-  margin: auto;
-  padding: 40px 24px 80px;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 20px 120px;
 }
 
 /* Header */
 header {
   text-align: center;
-  margin-bottom: 50px;
-  animation: fadeDown 0.8s ease-out;
+  margin-bottom: 48px;
+  animation: fadeIn 0.6s ease-out;
 }
+
 h1 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
   letter-spacing: -0.02em;
-  margin: 0 0 12px;
-  background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+  color: var(--text-primary);
 }
+
 .subtitle {
   font-size: 1.05rem;
   color: var(--text-secondary);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 400;
 }
 
-/* Day Filter */
-.day-filter {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 36px;
-  animation: fadeUp 0.6s 0.2s both;
+/* Sticky Controls */
+.controls {
+  position: sticky;
+  top: 16px;
+  z-index: 100;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  box-shadow: 0 4px 16px var(--shadow);
+  backdrop-filter: blur(20px);
+  animation: slideDown 0.5s ease-out;
 }
-.filter-btn {
+
+.controls-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.day-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.day-btn {
   background: transparent;
   border: 1px solid var(--border);
   color: var(--text-secondary);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.85rem;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
 }
-.filter-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
-.filter-btn.active {
-  background: var(--accent);
-  color: #050507;
+
+.day-btn:hover {
+  background: var(--accent-light);
   border-color: var(--accent);
-  box-shadow: 0 4px 20px var(--accent-glow);
+  color: var(--accent);
 }
 
-/* Grid */
-.grid {
+.day-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+/* Water Tracker */
+.water-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.water-ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: conic-gradient(var(--water) 0%, var(--border) 0%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: var(--transition);
+}
+
+.water-ring::after {
+  content: attr(data-count);
+  position: absolute;
+  inset: 4px;
+  background: var(--card-bg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.water-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--water-light);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.water-btn {
+  background: transparent;
+  border: none;
+  color: var(--water);
+  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.water-btn:hover {
+  background: var(--card-bg);
+}
+
+.water-btn:active {
+  transform: scale(0.95);
+}
+
+.water-display {
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 50px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.water-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-left: 4px;
+}
+
+/* Meal Grid */
+.meal-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  perspective: 1000px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 48px;
 }
 
-/* Cards */
-.card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.day-card {
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px;
-  position: relative;
-  overflow: hidden;
+  padding: 24px;
+  box-shadow: 0 2px 8px var(--shadow);
   transition: var(--transition);
   opacity: 0;
   transform: translateY(20px);
 }
-.card.visible { opacity: 1; transform: translateY(0); }
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-}
-.card:hover {
-  border-color: var(--border-hover);
-  background: var(--bg-card-hover);
-  transform: translateY(-6px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 20px var(--accent-glow);
-}
-.card.hidden { display: none; }
 
-.day {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 1.35rem;
-  font-weight: 600;
-  margin-bottom: 18px;
+.day-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.day-card:hover {
+  box-shadow: 0 8px 24px var(--shadow-hover);
+  transform: translateY(-4px);
+}
+
+.day-card.hidden {
+  display: none;
+}
+
+.day-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  letter-spacing: -0.01em;
-}
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  background: rgba(201, 162, 92, 0.15);
-  border: 1px solid rgba(201, 162, 92, 0.4);
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--accent);
-  text-transform: uppercase;
+  margin-bottom: 20px;
 }
 
-.meal {
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
+.day-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.day-badge {
+  background: var(--accent-light);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.meal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
   transition: var(--transition);
 }
-.meal:last-child { border-bottom: none; }
-.meal:hover { padding-left: 6px; color: var(--text-primary); }
-.meal span {
-  display: block;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  margin-top: 4px;
-  letter-spacing: 0.02em;
-  font-weight: 400;
+
+.meal-item:hover {
+  background: var(--accent-light);
 }
-.meal-type {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 500;
-  font-size: 0.95rem;
+
+.meal-item.completed {
+  opacity: 0.5;
+}
+
+.meal-item.completed .meal-text {
+  text-decoration: line-through;
   color: var(--text-secondary);
 }
 
-/* Nutrition Panel */
-.nutrition-panel {
-  margin-top: 48px;
-  background: var(--glass);
+.checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  margin-top: 2px;
+}
+
+.meal-item.completed .checkbox {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.checkmark {
+  color: white;
+  font-size: 12px;
+  opacity: 0;
+  transform: scale(0);
+  transition: var(--transition);
+}
+
+.meal-item.completed .checkmark {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.meal-content {
+  flex: 1;
+}
+
+.meal-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.meal-tag {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  display: block;
+}
+
+/* Stats Panel */
+.stats-panel {
+  background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px;
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 24px;
-  animation: fadeUp 0.8s 0.4s both;
+  gap: 32px;
 }
-.macro {
+
+.stat-item {
   text-align: center;
 }
-.macro-label {
-  font-size: 0.8rem;
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
+  letter-spacing: 0.05em;
   margin-bottom: 8px;
 }
-.macro-bar {
-  height: 4px;
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.stat-bar {
+  height: 6px;
   background: var(--border);
   border-radius: 999px;
-  margin: 8px 0 12px;
   overflow: hidden;
 }
-.macro-fill {
+
+.stat-fill {
   height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--success));
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), #e6d3a8);
+  transition: width 1s ease-out;
   width: 0;
-  transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.macro-val {
-  font-family: 'Space Grotesk', sans-serif;
+
+/* History Panel */
+.history-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.history-title {
+  font-size: 1.3rem;
   font-weight: 600;
-  font-size: 1.4rem;
+}
+
+.current-week-badge {
+  background: var(--success-light);
+  color: var(--success);
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.week-section {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.week-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  background: var(--bg);
+  transition: var(--transition);
+}
+
+.week-summary:hover {
+  background: var(--accent-light);
+}
+
+.week-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.week-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.week-date {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.week-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.week-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.stat-icon {
+  font-size: 1rem;
+}
+
+.expand-icon {
+  color: var(--text-secondary);
+  transition: var(--transition);
+  font-size: 1.2rem;
+}
+
+.week-section.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+.week-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background: var(--card-bg);
+}
+
+.week-section.expanded .week-details {
+  max-height: 800px;
+}
+
+.day-log {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.day-log:first-child {
+  border-top: none;
+}
+
+.day-log-name {
+  font-weight: 500;
+  min-width: 100px;
+}
+
+.day-log-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: var(--text-secondary);
+}
+
+.empty-history {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 20px;
+  font-size: 0.95rem;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-reset {
+  background: var(--accent);
+  color: white;
+  border: 2px solid var(--accent);
+}
+
+.btn-reset:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+}
+
+.btn-clear {
+  background: transparent;
+  color: #ff3b30;
+  border: 2px solid rgba(255, 59, 48, 0.3);
+  font-size: 0.85rem;
+  padding: 10px 24px;
+}
+
+.btn-clear:hover {
+  background: rgba(255, 59, 48, 0.1);
+  border-color: #ff3b30;
+  transform: translateY(-1px);
+}
+
+/* Tooltips */
+.tooltip-trigger {
+  position: relative;
+}
+
+.tooltip-trigger::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+  z-index: 1000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tooltip-trigger::before {
+    background: rgba(255, 255, 255, 0.95);
+    color: #000;
+  }
+}
+
+.tooltip-trigger::after {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition);
+  z-index: 1000;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tooltip-trigger::after {
+    border-top-color: rgba(255, 255, 255, 0.95);
+  }
+}
+
+.tooltip-trigger:hover::before,
+.tooltip-trigger:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Past day styling */
+.day-card.past-day {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.day-card.past-day .day-title::after {
+  content: ' (Past)';
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
 }
 
 /* Footer */
-.footer {
+footer {
   text-align: center;
-  margin-top: 60px;
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  letter-spacing: 0.03em;
-  animation: fadeUp 0.8s 0.6s both;
+  margin-top: 48px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
 }
-.footer span { color: var(--accent); font-weight: 500; }
+
+footer strong {
+  color: var(--text-primary);
+}
 
 /* Animations */
-@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-primary); }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* Responsive */
-@media (max-width: 640px) {
-  .grid { grid-template-columns: 1fr; }
-  .nutrition-panel { grid-template-columns: 1fr 1fr; }
-  .card { padding: 22px; }
+@media (max-width: 768px) {
+  .controls-grid {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .day-filters {
+    justify-content: center;
+  }
+  
+  .water-section {
+    justify-content: center;
+  }
+  
+  .meal-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .week-stats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
 }
 </style>
 </head>
 <body>
 
-<div class="bg-layer"></div>
-
 <div class="container">
   <header>
-    <h1>7-Day Muscle Building Meal Plan</h1>
-    <p class="subtitle">Precision Nutrition. Engineered for Growth.</p>
+    <h1>7-Day Muscle Building Plan</h1>
+    <p class="subtitle">Precision nutrition for consistent growth</p>
   </header>
 
-  <nav class="day-filter" id="dayFilter">
-    <button class="filter-btn active" data-day="all">All Days</button>
-    <button class="filter-btn" data-day="mon">Mon</button>
-    <button class="filter-btn" data-day="tue">Tue</button>
-    <button class="filter-btn" data-day="wed">Wed</button>
-    <button class="filter-btn" data-day="thu">Thu</button>
-    <button class="filter-btn" data-day="fri">Fri</button>
-    <button class="filter-btn" data-day="sat">Sat</button>
-    <button class="filter-btn" data-day="sun">Sun</button>
-  </nav>
-
-  <div class="grid" id="mealGrid">
-
-    <div class="card" data-day="mon">
-      <div class="day">Monday</div>
-      <div class="meal">
-        <div class="meal-type">Pre-Gym: 2 boiled eggs <span>(fuel)</span></div>
+  <div class="controls">
+    <div class="controls-grid">
+      <div class="day-filters" id="dayFilters">
+        <button class="day-btn active" data-day="all">All Days</button>
+        <button class="day-btn" data-day="monday">Mon</button>
+        <button class="day-btn" data-day="tuesday">Tue</button>
+        <button class="day-btn" data-day="wednesday">Wed</button>
+        <button class="day-btn" data-day="thursday">Thu</button>
+        <button class="day-btn" data-day="friday">Fri</button>
+        <button class="day-btn" data-day="saturday">Sat</button>
+        <button class="day-btn" data-day="sunday">Sun</button>
       </div>
-      <div class="meal">
-        <div class="meal-type">Post-Gym: 4 eggs + ugali + spinach <span>(recovery)</span></div>
-      </div>
-      <div class="meal">
-        <div class="meal-type">Dinner: Beans + rice + cabbage</div>
+      
+      <div class="water-section">
+        <div class="water-ring" id="waterRing" data-count="0"></div>
+        <div class="water-controls">
+          <button class="water-btn tooltip-trigger" id="waterDec" data-tooltip="Remove 250ml glass">−</button>
+          <span class="water-display" id="waterDisplay">0/8</span>
+          <button class="water-btn tooltip-trigger" id="waterInc" data-tooltip="Add 250ml glass">+</button>
+        </div>
+        <span class="water-label">glasses today</span>
       </div>
     </div>
-
-    <div class="card" data-day="tue">
-      <div class="day">Tuesday</div>
-      <div class="meal"><div class="meal-type">Pre-Gym: Banana + 2 eggs</div></div>
-      <div class="meal"><div class="meal-type">Post-Gym: 3 eggs (tomato mix) + ugali + sukuma</div></div>
-      <div class="meal"><div class="meal-type">Dinner: Njahi + potatoes</div></div>
-    </div>
-
-    <div class="card" data-day="wed">
-      <div class="day">Wednesday</div>
-      <div class="meal"><div class="meal-type">Pre-Gym: 2 boiled eggs</div></div>
-      <div class="meal"><div class="meal-type">Post-Gym: 4 eggs + rice + cabbage</div></div>
-      <div class="meal"><div class="meal-type">Dinner: Beans + chapati</div></div>
-    </div>
-
-    <div class="card" data-day="thu">
-      <div class="day">Thursday</div>
-      <div class="meal"><div class="meal-type">Pre-Gym: Banana + 2 eggs</div></div>
-      <div class="meal"><div class="meal-type">Post-Gym: 3 eggs + ugali + spinach</div></div>
-      <div class="meal"><div class="meal-type">Dinner: Njahi + rice</div></div>
-    </div>
-
-    <div class="card" data-day="fri">
-      <div class="day">Friday</div>
-      <div class="meal"><div class="meal-type">Pre-Gym: 2 eggs</div></div>
-      <div class="meal"><div class="meal-type">Post-Gym: 4 eggs (tomato mix) + ugali + sukuma</div></div>
-      <div class="meal"><div class="meal-type">Dinner: Beans + potatoes</div></div>
-    </div>
-
-    <div class="card" data-day="sat">
-      <div class="day">Saturday <span class="badge">Meat Day</span></div>
-      <div class="meal"><div class="meal-type">Brunch: Meat + ugali + greens</div></div>
-      <div class="meal"><div class="meal-type">Dinner: 3 eggs + cabbage</div></div>
-    </div>
-
-    <div class="card" data-day="sun">
-      <div class="day">Sunday</div>
-      <div class="meal"><div class="meal-type">Brunch: 4 eggs + chapati</div></div>
-      <div class="meal"><div class="meal-type">Dinner: Beans + rice + spinach</div></div>
-    </div>
-
   </div>
 
-  <section class="nutrition-panel">
-    <div class="macro">
-      <div class="macro-label">Daily Protein</div>
-      <div class="macro-bar"><div class="macro-fill" data-width="85%"></div></div>
-      <div class="macro-val">140–160g</div>
+  <div class="meal-grid" id="mealGrid">
+    <!-- Monday -->
+    <div class="day-card" data-day="monday">
+      <div class="day-header">
+        <h2 class="day-title">Monday</h2>
+      </div>
+      <div class="meal-list">
+        <div class="meal-item" data-id="mon-1">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">2 boiled eggs</div>
+            <div class="meal-tag">Pre-gym fuel</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="mon-2">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">4 eggs + ugali + spinach</div>
+            <div class="meal-tag">Post-gym recovery</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="mon-3">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Beans + rice + cabbage</div>
+            <div class="meal-tag">Dinner</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="macro">
-      <div class="macro-label">Complex Carbs</div>
-      <div class="macro-bar"><div class="macro-fill" data-width="70%"></div></div>
-      <div class="macro-val">280–320g</div>
-    </div>
-    <div class="macro">
-      <div class="macro-label">Healthy Fats</div>
-      <div class="macro-bar"><div class="macro-fill" data-width="45%"></div></div>
-      <div class="macro-val">60–75g</div>
-    </div>
-    <div class="macro">
-      <div class="macro-label">Recovery Focus</div>
-      <div class="macro-bar"><div class="macro-fill" data-width="90%"></div></div>
-      <div class="macro-val">High</div>
-    </div>
-  </section>
 
-  <footer class="footer">
-    Daily Target: <span>4–6 eggs + beans/njahi</span> | Train hard. Recover harder.
+    <!-- Tuesday -->
+    <div class="day-card" data-day="tuesday">
+      <div class="day-header">
+        <h2 class="day-title">Tuesday</h2>
+      </div>
+      <div class="meal-list">
+        <div class="meal-item" data-id="tue-1">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Banana + 2 eggs</div>
+            <div class="meal-tag">Pre-gym fuel</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="tue-2">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">3 eggs (tomato mix) + ugali + sukuma</div>
+            <div class="meal-tag">Post-gym recovery</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="tue-3">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Njahi + potatoes</div>
+            <div class="meal-tag">Dinner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wednesday -->
+    <div class="day-card" data-day="wednesday">
+      <div class="day-header">
+        <h2 class="day-title">Wednesday</h2>
+      </div>
+      <div class="meal-list">
+        <div class="meal-item" data-id="wed-1">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">2 boiled eggs</div>
+            <div class="meal-tag">Pre-gym fuel</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="wed-2">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">4 eggs + rice + cabbage</div>
+            <div class="meal-tag">Post-gym recovery</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="wed-3">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Beans + chapati</div>
+            <div class="meal-tag">Dinner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thursday -->
+    <div class="day-card" data-day="thursday">
+      <div class="day-header">
+        <h2 class="day-title">Thursday</h2>
+      </div>
+      <div class="meal-list">
+        <div class="meal-item" data-id="thu-1">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Banana + 2 eggs</div>
+            <div class="meal-tag">Pre-gym fuel</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="thu-2">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">3 eggs + ugali + spinach</div>
+            <div class="meal-tag">Post-gym recovery</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="thu-3">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Njahi + rice</div>
+            <div class="meal-tag">Dinner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Friday -->
+    <div class="day-card" data-day="friday">
+      <div class="day-header">
+        <h2 class="day-title">Friday</h2>
+      </div>
+      <div class="meal-list">
+        <div class="meal-item" data-id="fri-1">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">2 eggs</div>
+            <div class="meal-tag">Pre-gym fuel</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="fri-2">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">4 eggs (tomato mix) + ugali + sukuma</div>
+            <div class="meal-tag">Post-gym recovery</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="fri-3">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Beans + potatoes</div>
+            <div class="meal-tag">Dinner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saturday -->
+    <div class="day-card" data-day="saturday">
+      <div class="day-header">
+        <h2 class="day-title">Saturday</h2>
+        <span class="day-badge">Meat Day</span>
+      </div>
+      <div class="meal-list">
+        <div class="meal-item" data-id="sat-1">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Meat + ugali + greens</div>
+            <div class="meal-tag">Brunch</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="sat-2">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">3 eggs + cabbage</div>
+            <div class="meal-tag">Dinner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sunday -->
+    <div class="day-card" data-day="sunday">
+      <div class="day-header">
+        <h2 class="day-title">Sunday</h2>
+      </div>
+      <div class="meal-list">
+        <div class="meal-item" data-id="sun-1">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">4 eggs + chapati</div>
+            <div class="meal-tag">Brunch</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="sun-2">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Beans + rice + spinach</div>
+            <div class="meal-tag">Dinner</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nutrition Stats -->
+  <div class="stats-panel">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-label">Daily Protein</div>
+        <div class="stat-value">140–160g</div>
+        <div class="stat-bar"><div class="stat-fill" data-width="85%"></div></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Complex Carbs</div>
+        <div class="stat-value">280–320g</div>
+        <div class="stat-bar"><div class="stat-fill" data-width="70%"></div></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Healthy Fats</div>
+        <div class="stat-value">60–75g</div>
+        <div class="stat-bar"><div class="stat-fill" data-width="45%"></div></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Recovery Focus</div>
+        <div class="stat-value">High</div>
+        <div class="stat-bar"><div class="stat-fill" data-width="90%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Panel -->
+  <div class="history-panel">
+    <div class="history-header">
+      <h3 class="history-title">Progress History</h3>
+      <div class="current-week-badge" id="currentWeekBadge">
+        <span class="pulse-dot"></span>
+        <span>Current Week</span>
+      </div>
+    </div>
+    <div id="historyContainer"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn btn-reset" id="resetWeekBtn">Reset Week</button>
+    <button class="btn btn-clear" id="clearHistoryBtn">Clear All History</button>
+  </div>
+
+  <footer>
+    <p><strong>Daily Target:</strong> 4–6 eggs + beans/njahi | Train hard. Recover harder.</p>
   </footer>
 </div>
 
 <script>
-  // Intersection Observer for scroll reveal
-  const observer = new IntersectionObserver((entries) => {
+// State Management
+const STORAGE_KEYS = {
+  MEALS: 'meals_v2',
+  WATER: 'water_v2',
+  WATER_DATE: 'water_date_v2',
+  DAILY_LOGS: 'daily_logs_v2',
+  ARCHIVED_WEEKS: 'archived_weeks_v2',
+  LAST_RESET: 'last_reset_v2'
+};
+
+let state = {
+  meals: JSON.parse(localStorage.getItem(STORAGE_KEYS.MEALS) || '{}'),
+  water: parseInt(localStorage.getItem(STORAGE_KEYS.WATER) || '0'),
+  waterDate: localStorage.getItem(STORAGE_KEYS.WATER_DATE) || getTodayDate(),
+  dailyLogs: JSON.parse(localStorage.getItem(STORAGE_KEYS.DAILY_LOGS) || '{}'),
+  archivedWeeks: JSON.parse(localStorage.getItem(STORAGE_KEYS.ARCHIVED_WEEKS) || '[]'),
+  lastReset: localStorage.getItem(STORAGE_KEYS.LAST_RESET) || getWeekStart()
+};
+
+function getTodayDate() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function getWeekStart() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Monday
+  const monday = new Date(now.setDate(diff));
+  monday.setHours(0, 0, 0, 0);
+  return monday.toISOString().split('T')[0];
+}
+
+function getCurrentDay() {
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  return days[new Date().getDay()];
+}
+
+function getDayOfWeek(date) {
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  return days[new Date(date).getDay()];
+}
+
+// Check if we need to reset water (new day)
+function checkWaterReset() {
+  const today = getTodayDate();
+  if (state.waterDate !== today) {
+    // Save yesterday's water intake
+    if (state.water > 0) {
+      saveDailyLog(state.waterDate);
+    }
+    // Reset for new day
+    state.water = 0;
+    state.waterDate = today;
+    localStorage.setItem(STORAGE_KEYS.WATER, '0');
+    localStorage.setItem(STORAGE_KEYS.WATER_DATE, today);
+  }
+}
+
+// Check if we need to auto-reset week (Monday at midnight)
+function checkWeekReset() {
+  const currentWeekStart = getWeekStart();
+  
+  if (state.lastReset !== currentWeekStart) {
+    // It's a new week! Archive the old one and reset
+    autoArchiveWeek();
+    resetWeekCheckmarks();
+    
+    state.lastReset = currentWeekStart;
+    localStorage.setItem(STORAGE_KEYS.LAST_RESET, currentWeekStart);
+  }
+}
+
+// Auto-archive week when new week starts
+function autoArchiveWeek() {
+  const logs = Object.entries(state.dailyLogs).sort(([a], [b]) => new Date(b) - new Date(a));
+  
+  if (logs.length === 0) return;
+  
+  const totalMeals = logs.reduce((sum, [, log]) => sum + log.meals, 0);
+  const totalWater = logs.reduce((sum, [, log]) => sum + log.water, 0);
+  const avgWater = Math.round(totalWater / logs.length);
+  
+  const firstDate = new Date(logs[logs.length - 1][0]);
+  const lastDate = new Date(logs[0][0]);
+  const dateRange = `${firstDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${lastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  
+  const weekData = {
+    title: `Week ${state.archivedWeeks.length + 1}`,
+    dateRange: dateRange,
+    totalMeals: totalMeals,
+    avgWater: avgWater,
+    days: logs.map(([date, log]) => {
+      const d = new Date(date);
+      return {
+        name: d.toLocaleDateString('en-US', { weekday: 'long' }),
+        date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        meals: log.meals,
+        totalMeals: log.totalMeals,
+        water: log.water
+      };
+    })
+  };
+  
+  state.archivedWeeks.unshift(weekData);
+  localStorage.setItem(STORAGE_KEYS.ARCHIVED_WEEKS, JSON.stringify(state.archivedWeeks));
+  
+  // Clear daily logs after archiving
+  state.dailyLogs = {};
+  localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, '{}');
+}
+
+// Grey out past days
+function updatePastDays() {
+  const today = getTodayDate();
+  const currentDay = getCurrentDay();
+  
+  document.querySelectorAll('.day-card').forEach(card => {
+    const cardDay = card.dataset.day;
+    const cardDate = getTodayDate(); // Simplified - you'd need actual date tracking per card
+    
+    // Check if this day has passed this week
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const currentIndex = days.indexOf(currentDay);
+    const cardIndex = days.indexOf(cardDay);
+    
+    if (cardIndex < currentIndex) {
+      card.classList.add('past-day');
+    } else {
+      card.classList.remove('past-day');
+    }
+  });
+}
+
+// Save daily log
+function saveDailyLog(date) {
+  const meals = Object.keys(state.meals).filter(id => state.meals[id]).length;
+  state.dailyLogs[date] = {
+    meals: meals,
+    water: state.water,
+    totalMeals: 17
+  };
+  localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(state.dailyLogs));
+}
+
+// Reset week checkmarks only
+function resetWeekCheckmarks() {
+  state.meals = {};
+  localStorage.setItem(STORAGE_KEYS.MEALS, '{}');
+  document.querySelectorAll('.meal-item').forEach(item => item.classList.remove('completed'));
+}
+
+// Initialize
+function init() {
+  checkWeekReset(); // Check if it's a new week
+  checkWaterReset();
+  renderMeals();
+  updateWaterUI();
+  updatePastDays();
+  animateStats();
+  setupListeners();
+  renderHistory();
+  
+  // Auto-save daily log every hour
+  setInterval(() => {
+    saveDailyLog(getTodayDate());
+    renderHistory();
+  }, 3600000);
+  
+  // Check for week reset every minute
+  setInterval(() => {
+    checkWeekReset();
+    updatePastDays();
+  }, 60000);
+  
+  // Save on page unload
+  window.addEventListener('beforeunload', () => {
+    saveDailyLog(getTodayDate());
+  });
+  
+  // Observe cards
+  observeCards();
+}
+
+// Render meals
+function renderMeals() {
+  document.querySelectorAll('.meal-item').forEach(item => {
+    const id = item.dataset.id;
+    if (state.meals[id]) {
+      item.classList.add('completed');
+    }
+  });
+}
+
+// Toggle meal
+function toggleMeal(id) {
+  state.meals[id] = !state.meals[id];
+  localStorage.setItem(STORAGE_KEYS.MEALS, JSON.stringify(state.meals));
+  saveDailyLog(getTodayDate());
+  renderHistory();
+}
+
+// Water tracking
+function updateWaterUI() {
+  const percent = Math.min((state.water / 8) * 100, 100);
+  const ring = document.getElementById('waterRing');
+  const display = document.getElementById('waterDisplay');
+  
+  ring.style.background = `conic-gradient(var(--water) ${percent}%, var(--border) 0%)`;
+  ring.dataset.count = state.water;
+  display.textContent = `${state.water}/8`;
+}
+
+function changeWater(delta) {
+  const newValue = state.water + delta;
+  if (newValue >= 0 && newValue <= 12) {
+    state.water = newValue;
+    localStorage.setItem(STORAGE_KEYS.WATER, state.water.toString());
+    updateWaterUI();
+    saveDailyLog(getTodayDate());
+    renderHistory();
+  }
+}
+
+// Day filtering
+function filterDays(day) {
+  const cards = document.querySelectorAll('.day-card');
+  cards.forEach(card => {
+    if (day === 'all' || card.dataset.day === day) {
+      card.classList.remove('hidden');
+      setTimeout(() => card.classList.add('visible'), 10);
+    } else {
+      card.classList.add('hidden');
+      card.classList.remove('visible');
+    }
+  });
+}
+
+// Render history
+function renderHistory() {
+  const container = document.getElementById('historyContainer');
+  
+  // Current week
+  const currentWeekHTML = renderCurrentWeek();
+  
+  // Archived weeks
+  const archivedHTML = state.archivedWeeks.map((week, index) => 
+    renderWeek(week, index, false)
+  ).join('');
+  
+  if (!currentWeekHTML && state.archivedWeeks.length === 0) {
+    container.innerHTML = '<div class="empty-history">No tracking data yet. Start completing meals and drinking water!</div>';
+  } else {
+    container.innerHTML = currentWeekHTML + archivedHTML;
+    setupWeekToggles();
+  }
+}
+
+function renderCurrentWeek() {
+  const logs = Object.entries(state.dailyLogs)
+    .sort(([a], [b]) => new Date(b) - new Date(a))
+    .slice(0, 7);
+  
+  if (logs.length === 0 && state.water === 0 && Object.keys(state.meals).filter(k => state.meals[k]).length === 0) {
+    return '';
+  }
+  
+  // Add today if not in logs yet
+  const today = getTodayDate();
+  const currentMeals = Object.keys(state.meals).filter(id => state.meals[id]).length;
+  
+  const hasToday = logs.some(([date]) => date === today);
+  if (!hasToday && (currentMeals > 0 || state.water > 0)) {
+    logs.unshift([today, { meals: currentMeals, water: state.water, totalMeals: 17 }]);
+  }
+  
+  const totalMeals = logs.reduce((sum, [, log]) => sum + log.meals, 0);
+  const totalWater = logs.reduce((sum, [, log]) => sum + log.water, 0);
+  const avgWater = logs.length > 0 ? Math.round(totalWater / logs.length) : 0;
+  
+  return `
+    <div class="week-section expanded" data-week="current">
+      <div class="week-summary">
+        <div class="week-info">
+          <div class="week-title">This Week</div>
+          <div class="week-date">Live Progress</div>
+        </div>
+        <div class="week-stats">
+          <div class="week-stat">
+            <span class="stat-icon">🍽️</span>
+            <span>${totalMeals}/${logs.length * 17} meals</span>
+          </div>
+          <div class="week-stat">
+            <span class="stat-icon">💧</span>
+            <span>${avgWater}/8 glasses avg</span>
+          </div>
+        </div>
+        <span class="expand-icon">▼</span>
+      </div>
+      <div class="week-details">
+        ${logs.map(([date, log]) => {
+          const d = new Date(date);
+          const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
+          const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+          const isToday = date === today;
+          return `
+            <div class="day-log">
+              <div class="day-log-name">${dayName}${isToday ? ' (Today)' : ''}</div>
+              <div class="day-log-stats">
+                <span>${dateStr}</span>
+                <span>🍽️ ${log.meals}/${log.totalMeals}</span>
+                <span>💧 ${log.water}/8</span>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderWeek(week, index, isCurrent = false) {
+  return `
+    <div class="week-section" data-week="${index}">
+      <div class="week-summary">
+        <div class="week-info">
+          <div class="week-title">${week.title}</div>
+          <div class="week-date">${week.dateRange}</div>
+        </div>
+        <div class="week-stats">
+          <div class="week-stat">
+            <span class="stat-icon">🍽️</span>
+            <span>${week.totalMeals} meals</span>
+          </div>
+          <div class="week-stat">
+            <span class="stat-icon">💧</span>
+            <span>${week.avgWater}/8 glasses avg</span>
+          </div>
+        </div>
+        <span class="expand-icon">▼</span>
+      </div>
+      <div class="week-details">
+        ${week.days.map(day => `
+          <div class="day-log">
+            <div class="day-log-name">${day.name}</div>
+            <div class="day-log-stats">
+              <span>${day.date}</span>
+              <span>🍽️ ${day.meals}/${day.totalMeals}</span>
+              <span>💧 ${day.water}/8</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function setupWeekToggles() {
+  document.querySelectorAll('.week-summary').forEach(summary => {
+    summary.addEventListener('click', () => {
+      summary.parentElement.classList.toggle('expanded');
+    });
+  });
+}
+
+// Manual reset week
+function manualResetWeek() {
+  if (!confirm('Clear all meal checkmarks for this week? Your history will be saved.')) return;
+  
+  // Save current progress to daily log first
+  saveDailyLog(getTodayDate());
+  
+  // Reset checkmarks
+  resetWeekCheckmarks();
+  
+  alert('Week reset! Checkmarks cleared, history preserved.');
+}
+
+// Clear all history
+function clearAllHistory() {
+  if (!confirm('⚠️ This will permanently delete ALL history. Current week progress will be lost. Are you absolutely sure?')) return;
+  
+  if (!confirm('This cannot be undone. Delete everything?')) return;
+  
+  state.meals = {};
+  state.water = 0;
+  state.dailyLogs = {};
+  state.archivedWeeks = [];
+  
+  Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+  
+  state.waterDate = getTodayDate();
+  state.lastReset = getWeekStart();
+  localStorage.setItem(STORAGE_KEYS.WATER_DATE, state.waterDate);
+  localStorage.setItem(STORAGE_KEYS.LAST_RESET, state.lastReset);
+  
+  document.querySelectorAll('.meal-item').forEach(item => item.classList.remove('completed'));
+  updateWaterUI();
+  renderHistory();
+  
+  alert('All data cleared.');
+}
+
+// Setup listeners
+function setupListeners() {
+  // Meal clicks - but not if past day
+  document.querySelectorAll('.meal-item').forEach(item => {
+    item.addEventListener('click', () => {
+      if (!item.closest('.day-card').classList.contains('past-day')) {
+        item.classList.toggle('completed');
+        toggleMeal(item.dataset.id);
+      }
+    });
+  });
+  
+  // Water buttons
+  document.getElementById('waterInc').addEventListener('click', () => changeWater(1));
+  document.getElementById('waterDec').addEventListener('click', () => changeWater(-1));
+  
+  // Day filters
+  document.querySelectorAll('.day-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterDays(btn.dataset.day);
+    });
+  });
+  
+  // Actions
+  document.getElementById('resetWeekBtn').addEventListener('click', manualResetWeek);
+  document.getElementById('clearHistoryBtn').addEventListener('click', clearAllHistory);
+}
+
+// Animate stats
+function animateStats() {
+  setTimeout(() => {
+    document.querySelectorAll('.stat-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width;
+    });
+  }, 300);
+}
+
+// Observer for card animations
+function observeCards() {
+  const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
@@ -385,37 +1462,12 @@ h1 {
       }
     });
   }, { threshold: 0.1 });
+  
+  document.querySelectorAll('.day-card').forEach(card => observer.observe(card));
+}
 
-  document.querySelectorAll('.card').forEach(card => observer.observe(card));
-
-  // Animate macro bars on load
-  setTimeout(() => {
-    document.querySelectorAll('.macro-fill').forEach(bar => {
-      bar.style.width = bar.dataset.width;
-    });
-  }, 400);
-
-  // Day filter logic
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const cards = document.querySelectorAll('.card');
-
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const day = btn.dataset.day;
-
-      cards.forEach(card => {
-        if (day === 'all' || card.dataset.day === day) {
-          card.classList.remove('hidden');
-          setTimeout(() => card.classList.add('visible'), 10);
-        } else {
-          card.classList.add('hidden');
-          card.classList.remove('visible');
-        }
-      });
-    });
-  });
+// Start
+init();
 </script>
 
 </body>

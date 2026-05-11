@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Muscle Meal Plan</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💪</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -87,7 +86,6 @@ h1 {
 
 /* Sticky Controls */
 .controls {
-  position: sticky;
   top: 16px;
   z-index: 100;
   background: var(--card-bg);
@@ -614,7 +612,7 @@ h1 {
   bottom: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%) translateY(4px);
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.92);
   color: white;
   padding: 6px 12px;
   border-radius: 6px;
@@ -624,12 +622,14 @@ h1 {
   pointer-events: none;
   transition: var(--transition);
   z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 @media (prefers-color-scheme: dark) {
   .tooltip-trigger::before {
-    background: rgba(255, 255, 255, 0.95);
-    color: #000;
+    background: rgba(50, 50, 55, 0.98);
+    color: #f5f5f7;
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -640,7 +640,7 @@ h1 {
   left: 50%;
   transform: translateX(-50%) translateY(4px);
   border: 6px solid transparent;
-  border-top-color: rgba(0, 0, 0, 0.9);
+  border-top-color: rgba(0, 0, 0, 0.92);
   opacity: 0;
   pointer-events: none;
   transition: var(--transition);
@@ -649,7 +649,7 @@ h1 {
 
 @media (prefers-color-scheme: dark) {
   .tooltip-trigger::after {
-    border-top-color: rgba(255, 255, 255, 0.95);
+    border-top-color: rgba(50, 50, 55, 0.98);
   }
 }
 
@@ -662,7 +662,37 @@ h1 {
 /* Past day styling */
 .day-card.past-day {
   opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.day-card.past-day .meal-item {
+  cursor: not-allowed;
+  position: relative;
+}
+
+.day-card.past-day .meal-item:hover::before {
+  content: '🚫 Day has passed';
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.92);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 100;
   pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {
+  .day-card.past-day .meal-item:hover::before {
+    background: rgba(50, 50, 55, 0.98);
+    color: #f5f5f7;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 }
 
 .day-card.past-day .day-title::after {
@@ -735,7 +765,7 @@ footer strong {
 <div class="container">
   <header>
     <h1>7-Day Muscle Building Plan</h1>
-    <p class="subtitle">Precision nutrition for consistent growth</p>
+    <p class="subtitle">Precision nutrition. Engineered for growth.</p>
   </header>
 
   <div class="controls">
@@ -768,27 +798,28 @@ footer strong {
     <div class="day-card" data-day="monday">
       <div class="day-header">
         <h2 class="day-title">Monday</h2>
+        <span class="day-badge">Chest Day</span>
       </div>
       <div class="meal-list">
         <div class="meal-item" data-id="mon-1">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">2 boiled eggs</div>
-            <div class="meal-tag">Pre-gym fuel</div>
+            <div class="meal-text">2 boiled eggs + 1 banana</div>
+            <div class="meal-tag">Pre-gym • 7 AM</div>
           </div>
         </div>
         <div class="meal-item" data-id="mon-2">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">4 eggs + ugali + spinach</div>
-            <div class="meal-tag">Post-gym recovery</div>
+            <div class="meal-text">Ndengu + small ugali + spinach</div>
+            <div class="meal-tag">Post-gym / Lunch</div>
           </div>
         </div>
         <div class="meal-item" data-id="mon-3">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">Beans + rice + cabbage</div>
-            <div class="meal-tag">Dinner</div>
+            <div class="meal-text">3 eggs (tomato/onion mix) + cabbage</div>
+            <div class="meal-tag">Evening</div>
           </div>
         </div>
       </div>
@@ -798,27 +829,28 @@ footer strong {
     <div class="day-card" data-day="tuesday">
       <div class="day-header">
         <h2 class="day-title">Tuesday</h2>
+        <span class="day-badge">Arms Day</span>
       </div>
       <div class="meal-list">
         <div class="meal-item" data-id="tue-1">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
             <div class="meal-text">Banana + 2 eggs</div>
-            <div class="meal-tag">Pre-gym fuel</div>
+            <div class="meal-tag">Pre-gym</div>
           </div>
         </div>
         <div class="meal-item" data-id="tue-2">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">3 eggs (tomato mix) + ugali + sukuma</div>
-            <div class="meal-tag">Post-gym recovery</div>
+            <div class="meal-text">Kamande + rice (moderate) + sukuma wiki</div>
+            <div class="meal-tag">Post-gym</div>
           </div>
         </div>
         <div class="meal-item" data-id="tue-3">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">Njahi + potatoes</div>
-            <div class="meal-tag">Dinner</div>
+            <div class="meal-text">2 boiled eggs + spinach</div>
+            <div class="meal-tag">Evening</div>
           </div>
         </div>
       </div>
@@ -828,27 +860,28 @@ footer strong {
     <div class="day-card" data-day="wednesday">
       <div class="day-header">
         <h2 class="day-title">Wednesday</h2>
+        <span class="day-badge">Shoulders</span>
       </div>
       <div class="meal-list">
         <div class="meal-item" data-id="wed-1">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">2 boiled eggs</div>
-            <div class="meal-tag">Pre-gym fuel</div>
+            <div class="meal-text">2 eggs</div>
+            <div class="meal-tag">Pre-gym</div>
           </div>
         </div>
         <div class="meal-item" data-id="wed-2">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">4 eggs + rice + cabbage</div>
-            <div class="meal-tag">Post-gym recovery</div>
+            <div class="meal-text">Beans + small ugali + cabbage</div>
+            <div class="meal-tag">Post-gym</div>
           </div>
         </div>
         <div class="meal-item" data-id="wed-3">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">Beans + chapati</div>
-            <div class="meal-tag">Dinner</div>
+            <div class="meal-text">Njahi + spinach</div>
+            <div class="meal-tag">Evening</div>
           </div>
         </div>
       </div>
@@ -858,27 +891,28 @@ footer strong {
     <div class="day-card" data-day="thursday">
       <div class="day-header">
         <h2 class="day-title">Thursday</h2>
+        <span class="day-badge">Back Day</span>
       </div>
       <div class="meal-list">
         <div class="meal-item" data-id="thu-1">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
             <div class="meal-text">Banana + 2 eggs</div>
-            <div class="meal-tag">Pre-gym fuel</div>
+            <div class="meal-tag">Pre-gym</div>
           </div>
         </div>
         <div class="meal-item" data-id="thu-2">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">3 eggs + ugali + spinach</div>
-            <div class="meal-tag">Post-gym recovery</div>
+            <div class="meal-text">Ndengu + potatoes + sukuma wiki</div>
+            <div class="meal-tag">Post-gym</div>
           </div>
         </div>
         <div class="meal-item" data-id="thu-3">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">Njahi + rice</div>
-            <div class="meal-tag">Dinner</div>
+            <div class="meal-text">3 eggs + cabbage</div>
+            <div class="meal-tag">Evening</div>
           </div>
         </div>
       </div>
@@ -888,27 +922,28 @@ footer strong {
     <div class="day-card" data-day="friday">
       <div class="day-header">
         <h2 class="day-title">Friday</h2>
+        <span class="day-badge">Legs Day</span>
       </div>
       <div class="meal-list">
         <div class="meal-item" data-id="fri-1">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">2 eggs</div>
-            <div class="meal-tag">Pre-gym fuel</div>
+            <div class="meal-text">2 eggs + banana</div>
+            <div class="meal-tag">Pre-gym</div>
           </div>
         </div>
         <div class="meal-item" data-id="fri-2">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">4 eggs (tomato mix) + ugali + sukuma</div>
-            <div class="meal-tag">Post-gym recovery</div>
+            <div class="meal-text">Kamande + small rice + spinach</div>
+            <div class="meal-tag">Post-gym</div>
           </div>
         </div>
         <div class="meal-item" data-id="fri-3">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">Beans + potatoes</div>
-            <div class="meal-tag">Dinner</div>
+            <div class="meal-text">Njahi + 2 eggs</div>
+            <div class="meal-tag">Evening</div>
           </div>
         </div>
       </div>
@@ -918,21 +953,28 @@ footer strong {
     <div class="day-card" data-day="saturday">
       <div class="day-header">
         <h2 class="day-title">Saturday</h2>
-        <span class="day-badge">Meat Day</span>
+        <span class="day-badge">Cycling + Legs</span>
       </div>
       <div class="meal-list">
         <div class="meal-item" data-id="sat-1">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">Meat + ugali + greens</div>
+            <div class="meal-text">Meat + small ugali + sukuma wiki</div>
             <div class="meal-tag">Brunch</div>
           </div>
         </div>
         <div class="meal-item" data-id="sat-2">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">3 eggs + cabbage</div>
-            <div class="meal-tag">Dinner</div>
+            <div class="meal-text">Beans + spinach</div>
+            <div class="meal-tag">Evening</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="sat-3">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Small peanut/groundnut snack</div>
+            <div class="meal-tag">Optional snack</div>
           </div>
         </div>
       </div>
@@ -942,20 +984,28 @@ footer strong {
     <div class="day-card" data-day="sunday">
       <div class="day-header">
         <h2 class="day-title">Sunday</h2>
+        <span class="day-badge">Recovery</span>
       </div>
       <div class="meal-list">
         <div class="meal-item" data-id="sun-1">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">4 eggs + chapati</div>
+            <div class="meal-text">4 eggs + 1 chapati or small spaghetti</div>
             <div class="meal-tag">Brunch</div>
           </div>
         </div>
         <div class="meal-item" data-id="sun-2">
           <div class="checkbox"><span class="checkmark">✓</span></div>
           <div class="meal-content">
-            <div class="meal-text">Beans + rice + spinach</div>
-            <div class="meal-tag">Dinner</div>
+            <div class="meal-text">Ndengu + cabbage/spinach</div>
+            <div class="meal-tag">Evening</div>
+          </div>
+        </div>
+        <div class="meal-item" data-id="sun-3">
+          <div class="checkbox"><span class="checkmark">✓</span></div>
+          <div class="meal-content">
+            <div class="meal-text">Banana</div>
+            <div class="meal-tag">Optional snack</div>
           </div>
         </div>
       </div>
@@ -1007,7 +1057,7 @@ footer strong {
   </div>
 
   <footer>
-    <p><strong>Daily Target:</strong> 4–6 eggs + beans/njahi | Train hard. Recover harder.</p>
+    <p><strong>Daily Target:</strong> 4–6 eggs + legumes (ndengu/kamande/njahi/beans) + vegetables | <strong>Carbs:</strong> controlled portions</p>
   </footer>
 </div>
 
@@ -1151,7 +1201,7 @@ function saveDailyLog(date) {
   state.dailyLogs[date] = {
     meals: meals,
     water: state.water,
-    totalMeals: 17
+    totalMeals: 19
   };
   localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(state.dailyLogs));
 }

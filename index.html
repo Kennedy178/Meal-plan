@@ -4,10 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Muscle Meal Plan</title>
-<link
-  rel="icon"
-  href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💪%3C/text%3E%3C/svg%3E"
-/>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -769,7 +765,7 @@ footer strong {
 <div class="container">
   <header>
     <h1>7-Day Muscle Building Plan</h1>
-    <p class="subtitle">Precision nutrition. Engineered for growth.</p>
+    <p class="subtitle">Precision nutrition for consistent growth</p>
   </header>
 
   <div class="controls">
@@ -1062,6 +1058,7 @@ footer strong {
 
   <footer>
     <p><strong>Daily Target:</strong> 4–6 eggs + legumes (ndengu/kamande/njahi/beans) + vegetables | <strong>Carbs:</strong> controlled portions</p>
+    <p style="margin-top: 8px; color: var(--text-secondary); font-size: 0.85rem;">🎯 Strategy: High protein + moderate carbs = visible abs + muscle growth over 2–4 months</p>
   </footer>
 </div>
 
@@ -1199,17 +1196,36 @@ function updatePastDays() {
   });
 }
 
-// Save daily log
+// Meal counts per day (matches the HTML)
+const DAY_MEAL_COUNTS = {
+  monday: 3, tuesday: 3, wednesday: 3, thursday: 3,
+  friday: 3, saturday: 3, sunday: 3
+};
+
+// Day prefix map from date string
+function getDayPrefix(dateStr) {
+  const prefixes = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  return prefixes[new Date(dateStr).getDay()];
+}
+
+function getDayName(dateStr) {
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  return days[new Date(dateStr).getDay()];
+}
+
+// Save daily log — only count meals belonging to that date's day prefix
 function saveDailyLog(date) {
-  const meals = Object.keys(state.meals).filter(id => state.meals[id]).length;
+  const prefix = getDayPrefix(date);
+  const dayName = getDayName(date);
+  const mealsForDay = Object.keys(state.meals).filter(id => state.meals[id] && id.startsWith(prefix + '-'));
+  const totalForDay = DAY_MEAL_COUNTS[dayName] || 3;
   state.dailyLogs[date] = {
-    meals: meals,
+    meals: mealsForDay.length,
     water: state.water,
-    totalMeals: 19
+    totalMeals: totalForDay
   };
   localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(state.dailyLogs));
 }
-
 // Reset week checkmarks only
 function resetWeekCheckmarks() {
   state.meals = {};
@@ -1324,27 +1340,39 @@ function renderHistory() {
 }
 
 function renderCurrentWeek() {
-  const logs = Object.entries(state.dailyLogs)
-    .sort(([a], [b]) => new Date(b) - new Date(a))
-    .slice(0, 7);
-  
-  if (logs.length === 0 && state.water === 0 && Object.keys(state.meals).filter(k => state.meals[k]).length === 0) {
-    return '';
-  }
-  
-  // Add today if not in logs yet
   const today = getTodayDate();
-  const currentMeals = Object.keys(state.meals).filter(id => state.meals[id]).length;
-  
-  const hasToday = logs.some(([date]) => date === today);
-  if (!hasToday && (currentMeals > 0 || state.water > 0)) {
-    logs.unshift([today, { meals: currentMeals, water: state.water, totalMeals: 17 }]);
-  }
-  
-  const totalMeals = logs.reduce((sum, [, log]) => sum + log.meals, 0);
-  const totalWater = logs.reduce((sum, [, log]) => sum + log.water, 0);
-  const avgWater = logs.length > 0 ? Math.round(totalWater / logs.length) : 0;
-  
+  const todayPrefix = getDayPrefix(today);
+  const todayDayName = getDayName(today);
+  const todayMeals = Object.keys(state.meals).filter(id => state.meals[id] && id.startsWith(todayPrefix + '-')).length;
+  const todayTotal = DAY_MEAL_COUNTS[todayDayName] || 3;
+
+  // Past days from dailyLogs, excluding today (we render today live)
+  const pastLogs = Object.entries(state.dailyLogs)
+    .filter(([date]) => date !== today)
+    .sort(([a], [b]) => new Date(b) - new Date(a))
+    .slice(0, 6);
+
+  // Build display list: today first (live), then past days
+  const displayLogs = [];
+
+  // Always show today live
+  displayLogs.push([today, { meals: todayMeals, water: state.water, totalMeals: todayTotal, isLive: true }]);
+
+  // Add past days
+  pastLogs.forEach(([date, log]) => displayLogs.push([date, log]));
+
+  // If nothing at all yet, show empty state
+  const hasAnyData = todayMeals > 0 || state.water > 0 || pastLogs.length > 0;
+  if (!hasAnyData) return '';
+
+  // Summary header: sum completed meals and average water across days with data
+  const daysWithData = displayLogs.filter(([, log]) => log.meals > 0 || log.water > 0);
+  const totalChecked = displayLogs.reduce((sum, [, log]) => sum + log.meals, 0);
+  const totalPossible = displayLogs.reduce((sum, [, log]) => sum + log.totalMeals, 0);
+  const avgWater = daysWithData.length > 0
+    ? Math.round(displayLogs.reduce((sum, [, log]) => sum + log.water, 0) / displayLogs.length)
+    : 0;
+
   return `
     <div class="week-section expanded" data-week="current">
       <div class="week-summary">
@@ -1355,7 +1383,7 @@ function renderCurrentWeek() {
         <div class="week-stats">
           <div class="week-stat">
             <span class="stat-icon">🍽️</span>
-            <span>${totalMeals}/${logs.length * 17} meals</span>
+            <span>${totalChecked}/${totalPossible} meals</span>
           </div>
           <div class="week-stat">
             <span class="stat-icon">💧</span>
@@ -1365,14 +1393,14 @@ function renderCurrentWeek() {
         <span class="expand-icon">▼</span>
       </div>
       <div class="week-details">
-        ${logs.map(([date, log]) => {
+        ${displayLogs.map(([date, log]) => {
           const d = new Date(date);
           const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
           const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
           const isToday = date === today;
           return `
             <div class="day-log">
-              <div class="day-log-name">${dayName}${isToday ? ' (Today)' : ''}</div>
+              <div class="day-log-name">${dayName}${isToday ? ' <span style="color:var(--success);font-size:0.78rem;font-weight:600;">● Today</span>' : ''}</div>
               <div class="day-log-stats">
                 <span>${dateStr}</span>
                 <span>🍽️ ${log.meals}/${log.totalMeals}</span>
